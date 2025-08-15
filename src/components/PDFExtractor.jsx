@@ -10,24 +10,24 @@ const PDFExtractor = () => {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const { toast } = useToast();
 
-  const handleDragEnter = useCallback((e: React.DragEvent) => {
+  const handleDragEnter = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(true);
   }, []);
 
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
+  const handleDragLeave = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
   }, []);
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
+  const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
   }, []);
 
-  const validateFile = (file: File): boolean => {
+  const validateFile = (file) => {
     if (file.type !== 'application/pdf') {
       setError('Please select a PDF file only.');
       toast({
@@ -52,7 +52,7 @@ const PDFExtractor = () => {
     return true;
   };
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file) => {
     if (!validateFile(file)) return;
 
     setIsLoading(true);
@@ -94,7 +94,7 @@ const PDFExtractor = () => {
     }
   };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
@@ -105,7 +105,7 @@ const PDFExtractor = () => {
     }
   }, []);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (e) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       uploadFile(files[0]);
