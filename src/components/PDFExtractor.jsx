@@ -1,12 +1,18 @@
-import React, { useState, useCallback } from 'react';
-import { Upload, FileText, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useCallback } from "react";
+import {
+  Upload,
+  FileText,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const PDFExtractor = () => {
   const [isDragActive, setIsDragActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [extractedText, setExtractedText] = useState('');
-  const [error, setError] = useState('');
+  const [extractedText, setExtractedText] = useState("");
+  const [error, setError] = useState("");
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const { toast } = useToast();
 
@@ -28,8 +34,8 @@ const PDFExtractor = () => {
   }, []);
 
   const validateFile = (file) => {
-    if (file.type !== 'application/pdf') {
-      setError('Please select a PDF file only.');
+    if (file.type !== "application/pdf") {
+      setError("Please select a PDF file only.");
       toast({
         variant: "destructive",
         title: "Invalid file type",
@@ -37,10 +43,10 @@ const PDFExtractor = () => {
       });
       return false;
     }
-    
+
     // 10MB limit
     if (file.size > 10 * 1024 * 1024) {
-      setError('File size must be less than 10MB.');
+      setError("File size must be less than 10MB.");
       toast({
         variant: "destructive",
         title: "File too large",
@@ -48,7 +54,7 @@ const PDFExtractor = () => {
       });
       return false;
     }
-    
+
     return true;
   };
 
@@ -56,16 +62,16 @@ const PDFExtractor = () => {
     if (!validateFile(file)) return;
 
     setIsLoading(true);
-    setError('');
-    setExtractedText('');
+    setError("");
+    setExtractedText("");
     setUploadSuccess(false);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("pdf", file);
 
     try {
-      const response = await fetch('http://localhost:5000/upload', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5000/api/ocr/", {
+        method: "POST",
         body: formData,
       });
 
@@ -74,7 +80,20 @@ const PDFExtractor = () => {
       }
 
       const data = await response.json();
-      setExtractedText(data.text || 'No text found in the PDF.');
+
+      // Ensure text is an array
+      let textArray = [];
+      if (Array.isArray(data.text)) {
+        textArray = data.text;
+      } else if (typeof data.text === "string") {
+        textArray = [data.text];
+      } else {
+        textArray = ["No text found in the PDF."];
+      }
+
+      // Join into a single string with line breaks
+      setExtractedText(textArray.join("\n"));
+
       setUploadSuccess(true);
       toast({
         title: "Success!",
@@ -82,7 +101,8 @@ const PDFExtractor = () => {
         className: "bg-success text-success-foreground",
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to extract text from PDF.';
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to extract text from PDF.";
       setError(errorMessage);
       toast({
         variant: "destructive",
@@ -121,7 +141,8 @@ const PDFExtractor = () => {
             PDF Text Extractor
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Upload a PDF and get extracted text instantly. Fast, secure, and easy to use.
+            Upload a PDF and get extracted text instantly. Fast, secure, and
+            easy to use.
           </p>
         </div>
 
@@ -130,17 +151,20 @@ const PDFExtractor = () => {
           <div
             className={`
               relative border-2 border-dashed rounded-xl p-12 text-center transition-all duration-300
-              ${isDragActive 
-                ? 'border-primary bg-upload-zone-active shadow-upload scale-105' 
-                : 'border-upload-zone-border bg-upload-zone hover:border-primary hover:shadow-medium'
+              ${
+                isDragActive
+                  ? "border-primary bg-upload-zone-active shadow-upload scale-105"
+                  : "border-upload-zone-border bg-upload-zone hover:border-primary hover:shadow-medium"
               }
-              ${isLoading ? 'pointer-events-none opacity-75' : 'cursor-pointer'}
+              ${isLoading ? "pointer-events-none opacity-75" : "cursor-pointer"}
             `}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDragOver={handleDragOver}
             onDrop={handleDrop}
-            onClick={() => !isLoading && document.getElementById('file-input')?.click()}
+            onClick={() =>
+              !isLoading && document.getElementById("file-input")?.click()
+            }
           >
             <input
               id="file-input"
@@ -150,13 +174,17 @@ const PDFExtractor = () => {
               className="hidden"
               disabled={isLoading}
             />
-            
+
             <div className="space-y-4">
               {isLoading ? (
                 <div className="flex flex-col items-center space-y-4">
                   <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                  <p className="text-lg font-medium text-primary">Extracting text...</p>
-                  <p className="text-sm text-muted-foreground">This may take a moment</p>
+                  <p className="text-lg font-medium text-primary">
+                    Extracting text...
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    This may take a moment
+                  </p>
                 </div>
               ) : (
                 <>
@@ -167,13 +195,15 @@ const PDFExtractor = () => {
                   </div>
                   <div>
                     <p className="text-lg font-medium mb-2">
-                      {isDragActive ? 'Drop your PDF here' : 'Drop your PDF here or click to browse'}
+                      {isDragActive
+                        ? "Drop your PDF here"
+                        : "Drop your PDF here or click to browse"}
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Supports PDF files up to 10MB
                     </p>
                   </div>
-                  <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-lg transition-colors shadow-soft hover:shadow-medium">
+                  <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-4 px-6 m-10 rounded-lg transition-colors shadow-soft hover:shadow-medium">
                     Choose File
                   </button>
                 </>
@@ -199,7 +229,9 @@ const PDFExtractor = () => {
             <CheckCircle className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
             <div>
               <h3 className="font-medium text-success mb-1">Success</h3>
-              <p className="text-sm text-success/80">Text extracted successfully!</p>
+              <p className="text-sm text-success/80">
+                Text extracted successfully!
+              </p>
             </div>
           </div>
         )}
@@ -211,18 +243,18 @@ const PDFExtractor = () => {
               <FileText className="h-5 w-5 text-primary" />
               <h2 className="text-2xl font-semibold">Extracted Text</h2>
             </div>
+            <div className="mt-4 mb-4 flex justify-end">
+              <button
+                onClick={() => navigator.clipboard.writeText(extractedText)}
+                className="bg-secondary hover:bg-gray-400 text-secondary-foreground hover:text-black font-medium py-2 px-4 rounded-lg transition-colors shadow-soft hover:shadow-medium"
+              >
+                Copy to Clipboard
+              </button>
+            </div>
             <div className="bg-text-display border border-border rounded-lg p-6 max-h-96 overflow-y-auto shadow-soft">
               <pre className="whitespace-pre-wrap text-sm leading-relaxed text-foreground font-mono">
                 {extractedText}
               </pre>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => navigator.clipboard.writeText(extractedText)}
-                className="bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium py-2 px-4 rounded-lg transition-colors shadow-soft hover:shadow-medium"
-              >
-                Copy to Clipboard
-              </button>
             </div>
           </div>
         )}
