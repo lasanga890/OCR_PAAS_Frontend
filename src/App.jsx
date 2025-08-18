@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import Index from "./pages/Index";
+import Auth from "./components/Auth"; // Import the Auth component
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -17,6 +18,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} /> {/* Add Auth route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

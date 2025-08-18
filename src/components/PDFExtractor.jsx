@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Auth from "@/components/Auth";
+import NavBar from "./NavBar";
 
 const PDFExtractor = () => {
   const [isDragActive, setIsDragActive] = useState(false);
@@ -135,7 +136,7 @@ const PDFExtractor = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Auth />
+      <NavBar />
       {/* Hero Section */}
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="text-center mb-12 animate-fade-in">
