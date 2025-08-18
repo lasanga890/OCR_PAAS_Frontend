@@ -7,6 +7,7 @@ import { store } from "./redux/store";
 import Index from "./pages/Index";
 import Auth from "./components/Auth"; // Import the Auth component
 import NotFound from "./pages/NotFound";
+import TryApi from "./components/tryAPI";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} /> {/* Add Auth route */}
+            <Route path="/try-api" element={<TryApi />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

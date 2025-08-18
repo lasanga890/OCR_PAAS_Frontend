@@ -13,15 +13,13 @@ export default function Auth() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle between sign-in and sign-up
+  const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "", name: "" });
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Google Sign-In
   const onGoogleClickHandler = async () => {
     setIsLoading(true);
     setError("");
@@ -48,7 +46,7 @@ export default function Auth() {
         description: "Signed in with Google successfully.",
         className: "bg-green-100 text-green-800",
       });
-      navigate("/");
+      navigate("/try-api"); // Redirect to TryApi page
     } catch (err) {
       const errorMessage = err.message || "Unable to connect with Google";
       setError(errorMessage);
@@ -63,7 +61,6 @@ export default function Auth() {
     }
   };
 
-  // Handle Email/Password Sign-In
   const onEmailSignInHandler = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -90,7 +87,7 @@ export default function Auth() {
         description: "Signed in with email successfully.",
         className: "bg-green-100 text-green-800",
       });
-      navigate("/");
+      navigate("/try-api"); // Redirect to TryApi page
     } catch (err) {
       const errorMessage = err.message || "Email/Password sign-in failed";
       setError(errorMessage);
@@ -105,7 +102,6 @@ export default function Auth() {
     }
   };
 
-  // Handle Email/Password Sign-Up
   const onEmailSignUpHandler = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -132,7 +128,7 @@ export default function Auth() {
         description: "Account created successfully.",
         className: "bg-green-100 text-green-800",
       });
-      navigate("/");
+      navigate("/try-api"); // Redirect to TryApi page
     } catch (err) {
       const errorMessage = err.message || "Account creation failed";
       setError(errorMessage);
@@ -162,7 +158,6 @@ export default function Auth() {
             </div>
           </div>
         )}
-        {/* Google Sign-In Button */}
         <button
           onClick={onGoogleClickHandler}
           disabled={isLoading}
@@ -189,13 +184,11 @@ export default function Auth() {
             </>
           )}
         </button>
-        {/* Divider */}
         <div className="my-6 border-t text-center">
           <span className="relative top-[-0.75rem] bg-white px-4 text-sm text-gray-600 font-medium">
             Or {isSignUp ? "sign up" : "sign in"} with email
           </span>
         </div>
-        {/* Email/Password Form */}
         <form onSubmit={isSignUp ? onEmailSignUpHandler : onEmailSignInHandler} className="space-y-4">
           {isSignUp && (
             <input
@@ -250,7 +243,6 @@ export default function Auth() {
             <span>{isSignUp ? "Sign Up" : "Sign In"}</span>
           </button>
         </form>
-        {/* Toggle Sign-In/Sign-Up */}
         <p className="mt-6 text-sm text-gray-600 text-center">
           {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
           <button
