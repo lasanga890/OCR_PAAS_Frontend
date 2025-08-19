@@ -1,41 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, AlertCircle, Code } from "lucide-react";
 import NavBar from "./NavBar";
 
 export default function TryApi() {
-  const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [apiResponse, setApiResponse] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
+  // 🔹 Load user from sessionStorage
   useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api1/auth/verify", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Invalid or missing token");
-        await res.json(); // Ensure response is valid
-        setIsLoading(false);
-      } catch (err) {
-        setError("You must be signed in to access this page.");
-        toast({
-          variant: "destructive",
-          title: "Access Denied",
-          description: "Please sign in to access the API.",
-          className: "bg-red-100 text-red-800",
-        });
-        navigate("/auth");
-      }
-    };
-
-    if (!currentUser) {
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    } else {
       setError("You must be signed in to access this page.");
       toast({
         variant: "destructive",
@@ -44,10 +26,8 @@ export default function TryApi() {
         className: "bg-red-100 text-red-800",
       });
       navigate("/auth");
-    } else {
-      verifyToken();
     }
-  }, [currentUser, navigate, toast]);
+  }, [navigate, toast]);
 
   const handleApiTest = async () => {
     setIsLoading(true);
@@ -56,7 +36,7 @@ export default function TryApi() {
     try {
       const res = await fetch("http://localhost:5000/api1/test", {
         method: "GET",
-        credentials: "include",
+        credentials: "include", // ensures cookies are sent
       });
       if (!res.ok) throw new Error("API request failed");
       const data = await res.json();
@@ -80,14 +60,6 @@ export default function TryApi() {
     }
   };
 
-  if (isLoading && !apiResponse) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar />
@@ -99,7 +71,13 @@ export default function TryApi() {
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Test our API endpoints securely. Make authenticated requests and view the responses below.
           </p>
+          {currentUser && (
+            <p className="mt-4 text-lg text-gray-700">
+              Welcome, <span className="font-semibold">{currentUser.name || currentUser.email}</span> 🎉
+            </p>
+          )}
         </div>
+
         {error && (
           <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start space-x-3 animate-fade-in">
             <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -109,6 +87,7 @@ export default function TryApi() {
             </div>
           </div>
         )}
+
         <div className="mb-8">
           <button
             onClick={handleApiTest}
@@ -132,6 +111,7 @@ export default function TryApi() {
             )}
           </button>
         </div>
+
         {apiResponse && (
           <div className="animate-fade-in">
             <div className="flex items-center space-x-2 mb-4">

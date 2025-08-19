@@ -20,7 +20,7 @@ export default function NavBar() {
         </NavLink>
         <div className="flex space-x-6">
           <NavLink
-            to="/ocr"
+            to="/"
             className={({ isActive }) =>
               `px-4 py-2 rounded-md transition-colors ${
                 isActive
